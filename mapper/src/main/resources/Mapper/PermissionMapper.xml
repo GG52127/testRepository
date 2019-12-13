@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.csg.mapper.PermissionMapper">
+	<resultMap type="com.csg.model.PermissionTree" id="m1">
+		<id property="id" column="permissionId" />
+		<result property="text" column="permissionName" />
+		<result property="urlString" column="permissionRecource" />
+		<collection property="children" column="permissionId"
+			select="s1"></collection>
+	</resultMap>
+	<select id="selectPermissionByTop" resultMap="m1">
+		SELECT
+		permissionId,permissionName,permissionRecource,permissionCls
+		FROM
+		`permission`
+		WHERE
+		permissionParent = 0
+	</select>
+	<select id="s1" resultMap="m1">
+		SELECT
+		permissionId,permissionName,permissionRecource,permissionCls
+		FROM
+		`permission`
+		WHERE permissionParent= #{permissionId}
+	</select>
+</mapper>

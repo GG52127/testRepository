@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.csg.mapper.OpMapper">
+
+	<select id="selectByName" resultType="com.csg.model.Person">
+		select pId,pName from
+		person where pName=#{name}
+	</select>
+
+	<select id="showPersonsNotPermission"
+		resultType="com.csg.model.Person">
+		select person.pId,person.pName
+		from person
+		left join
+		person_permission
+		on person.pId=person_permission.pId
+		where
+		person_permission.permissionId is NULL
+	</select>
+
+	<insert id="insertPermissionWithPid">
+		insert into person_permission (pId,permissionId)
+		VALUES
+		<foreach collection="permissionIds" item="permissionId"
+			separator=",">
+			(#{pid},#{permissionId})
+		</foreach>
+	</insert>
+
+	<select id="selectPersonCount" resultType="java.lang.Integer">
+		select count(*) from
+		(select person.pId,person.pName
+		from person
+		left join
+		person_permission
+		on person.pId=person_permission.pId
+		where
+		person_permission.permissionId is NULL) as lo;
+	</select>
+
+
+	<select id="selectPermissionWithId" resultType="Integer">
+		<choose>
+			<when test="pid == 0">
+				select permissionId from permission
+			</when>
+			<otherwise>
+				select person_permission.permissionId
+				from
+				person_permission
+				where person_permission.pId = #{pid}
+			</otherwise>
+		</choose>
+	</select>
+</mapper>
